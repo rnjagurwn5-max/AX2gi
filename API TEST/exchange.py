@@ -20,7 +20,7 @@ API_KEY = os.getenv("EXCHANGE_API_KEY")
 # 2. 페이지 설정
 st.set_page_config(page_title="실시간 환율 계산기", layout="wide")
 
-# 3. 디자인: CSS 업데이트 (반응형 유지, 불필요한 태그 충돌 제거)
+# 3. 디자인: CSS 업데이트
 page_bg_img = """
 <style>
 /* 심플한 그래픽/도트 스타일의 모던한 세계 지도 배경 */
@@ -153,6 +153,20 @@ if st.session_state.show_calc:
             hist = ticker.history(period=period, interval=interval)
             
             if not hist.empty:
+                # ★ 변경포인트 1: Y축 범위를 강제로 좁혀 변동폭(다이나믹) 강조
+                y_min = hist['Close'].min()
+                y_max = hist['Close'].max()
+                y_margin = (y_max - y_min) * 0.1 # 상하단 10% 여백만 남김
+                if y_margin == 0: y_margin = y_min * 0.001
+                
+                # ★ 변경포인트 2: 통화별 눈금 포맷 최적화 (원/엔화는 거추장스런 소수점 컷)
+                if target_currency in ["KRW", "JPY"]:
+                    axis_tick_format = ",.0f"  # Y축 틱: 정수 표현 (예: 1,350)
+                    hover_tick_format = ",.2f" # 마우스 오버 시: 소수 둘째자리까지 표시
+                else:
+                    axis_tick_format = ".4f"
+                    hover_tick_format = ".4f"
+
                 fig = px.line(
                     hist, 
                     x=hist.index, 
@@ -179,7 +193,8 @@ if st.session_state.show_calc:
                         showline=True,
                         linecolor="#D1D5DB",
                         linewidth=1,
-                        tickformat=".4f"
+                        tickformat=axis_tick_format, # 맞춤형 포맷 적용
+                        range=[y_min - y_margin, y_max + y_margin] # 강제 확대 스케일링 적용
                     ),
                     hovermode="x unified",
                     hoverlabel=dict(
@@ -194,7 +209,7 @@ if st.session_state.show_calc:
                     line_width=2.5,
                     fill='tozeroy',
                     fillcolor='rgba(46, 91, 255, 0.1)',
-                    hovertemplate=f'환율: <b>%{{y}}</b> {target_currency}<extra></extra>'
+                    hovertemplate=f'환율: <b>%{{y:{hover_tick_format}}}</b> {target_currency}<extra></extra>' # 굵게 표시 유지
                 )
                 
                 st.plotly_chart(fig, use_container_width=True)
