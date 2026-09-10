@@ -21,7 +21,7 @@ API_KEY = os.getenv("EXCHANGE_API_KEY")
 # 2. 페이지 설정
 st.set_page_config(page_title="실시간 환율 계산기", layout="wide")
 
-# 3. 디자인: CSS 업데이트 (심플한 그래픽 지도, 커스텀 결과창, 흰색 라벨)
+# 3. 디자인: CSS 업데이트 (라디오 버튼 텍스트를 확실한 흰색으로 변경)
 page_bg_img = """
 <style>
 /* 심플한 그래픽/도트 스타일의 모던한 세계 지도 배경 */
@@ -51,10 +51,15 @@ div[data-testid="column"]:nth-of-type(2) > div {
     margin-top: 10vh;
 }
 
-/* 위젯의 라벨(보유 통화, 금액 등) 및 기타 텍스트 가독성 */
+/* 위젯 라벨 및 입력창 */
 label { color: #FFFFFF !important; font-weight: bold; }
 div[data-baseweb="select"] > div, input[type="number"] { background-color: #F0F2F6 !important; color: #111111 !important; }
-.stRadio label { color: #FFFFFF !important; }
+
+/* ★ 수정: 조회 기간 라디오 버튼의 텍스트를 확실한 흰색으로 강제 지정 */
+.stRadio [data-testid="stMarkdownContainer"] p {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
 </style>
 """
 st.markdown(page_bg_img, unsafe_allow_html=True)
@@ -69,7 +74,6 @@ def toggle_calculator():
 # 5. 메인 레이아웃 구성
 col1, col2 = st.columns([1.2, 1])
 
-# 통화 선택 변수를 전역적으로 사용하기 위해 미리 초기화
 base_currency = "USD"
 target_currency = "KRW"
 
@@ -115,7 +119,6 @@ if st.session_state.show_calc:
     st.markdown("<div style='margin-top: 5vh;'></div>", unsafe_allow_html=True)
     st.markdown('<h3 style="color: white; border-bottom: 2px solid #6C8EBF; padding-bottom: 10px;">📈 환율 변동 추이</h3>', unsafe_allow_html=True)
     
-    # 기간 선택
     period_options = {
         "1일 (시간별)": ("1d", "1h"),
         "1개월 (일별)": ("1mo", "1d"),
@@ -126,7 +129,6 @@ if st.session_state.show_calc:
     selected_period = st.radio("조회 기간 선택", list(period_options.keys()), horizontal=True)
     period, interval = period_options[selected_period]
     
-    # yfinance 티커 심볼 생성 (예: USDKRW=X)
     ticker_symbol = f"{base_currency}{target_currency}=X"
     
     with st.spinner("그래프 데이터를 불러오는 중..."):
@@ -135,7 +137,6 @@ if st.session_state.show_calc:
             hist = ticker.history(period=period, interval=interval)
             
             if not hist.empty:
-                # Plotly를 이용한 반응형 인터랙티브 차트
                 fig = px.line(
                     hist, 
                     x=hist.index, 
@@ -143,13 +144,23 @@ if st.session_state.show_calc:
                     labels={'Close': f'환율 ({target_currency})', 'index': '날짜/시간'}
                 )
                 
-                # 차트 디자인 설정 (어두운 배경에 맞게 조정)
+                # ★ 수정: 가로 선(Y축 격자)이 뚜렷하게 보이도록 스타일 조정
                 fig.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(255,255,255,0.9)",
-                    font=dict(color="white"),
-                    xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.2)"),
-                    yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.2)"),
+                    plot_bgcolor="rgba(255,255,255,0.95)",
+                    font=dict(color="black"),
+                    xaxis=dict(
+                        showgrid=True, 
+                        gridcolor="rgba(200,200,200,0.4)",
+                        showline=True,
+                        linecolor="gray"
+                    ),
+                    yaxis=dict(
+                        showgrid=True, 
+                        gridcolor="rgba(200,200,200,0.6)", # 가로줄 진하게 표시
+                        showline=True,
+                        linecolor="gray"
+                    ),
                     hovermode="x unified"
                 )
                 fig.update_traces(line_color='#2E5BFF', line_width=2.5)
