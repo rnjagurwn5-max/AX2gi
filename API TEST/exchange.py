@@ -14,7 +14,8 @@ import plotly.express as px
 from dotenv import load_dotenv
 
 # 1. 환경 변수 로드 (.env 파일이 exchange.py와 같은 폴더에 있을 때)
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path)
 API_KEY = os.getenv("EXCHANGE_API_KEY")
 
 # 2. 페이지 설정
