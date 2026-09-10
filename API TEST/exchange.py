@@ -13,15 +13,14 @@ import yfinance as yf
 import plotly.express as px
 from dotenv import load_dotenv
 
-# 1. 상위 폴더에 있는 .env 파일 로드
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-load_dotenv(dotenv_path)
+# 1. 환경 변수 로드 (.env 파일이 exchange.py와 같은 폴더에 있을 때)
+load_dotenv()
 API_KEY = os.getenv("EXCHANGE_API_KEY")
 
 # 2. 페이지 설정
 st.set_page_config(page_title="실시간 환율 계산기", layout="wide")
 
-# 3. 디자인: CSS 업데이트 (라디오 버튼 텍스트를 확실한 흰색으로 변경)
+# 3. 디자인: CSS 업데이트 (심플한 그래픽 지도, 커스텀 결과창, 흰색 라벨)
 page_bg_img = """
 <style>
 /* 심플한 그래픽/도트 스타일의 모던한 세계 지도 배경 */
@@ -37,7 +36,7 @@ page_bg_img = """
 .title-text { color: white; font-size: 4rem; font-weight: 800; margin-top: 15vh; line-height: 1.2; }
 .sub-text { color: #e0e0e0; font-size: 1.2rem; margin-top: 20px; margin-bottom: 40px; }
 
-/* 버튼 */
+/* 버튼 색상 */
 div.stButton > button:first-child { background-color: #6C8EBF !important; color: white !important; border: none !important; border-radius: 8px !important; }
 div.stButton > button:first-child:hover { background-color: #5A7CA6 !important; }
 
@@ -55,7 +54,7 @@ div[data-testid="column"]:nth-of-type(2) > div {
 label { color: #FFFFFF !important; font-weight: bold; }
 div[data-baseweb="select"] > div, input[type="number"] { background-color: #F0F2F6 !important; color: #111111 !important; }
 
-/* ★ 수정: 조회 기간 라디오 버튼의 텍스트를 확실한 흰색으로 강제 지정 */
+/* 조회 기간 라디오 버튼의 텍스트를 확실한 흰색으로 강제 지정 */
 .stRadio [data-testid="stMarkdownContainer"] p {
     color: #FFFFFF !important;
     font-weight: 600 !important;
@@ -92,7 +91,7 @@ with col2:
         
         if st.button("계산 실행", use_container_width=True):
             if not API_KEY:
-                st.error("API 키가 설정되지 않았습니다.")
+                st.error("API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.")
             else:
                 with st.spinner("환율 정보를 가져오는 중..."):
                     url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/pair/{base_currency}/{target_currency}/{amount}"
@@ -111,6 +110,8 @@ with col2:
                             </div>
                             """
                             st.markdown(result_html, unsafe_allow_html=True)
+                        else:
+                            st.error("환율 정보를 가져오는데 실패했습니다. API 키를 확인해주세요.")
                     except Exception as e:
                         st.error(f"오류가 발생했습니다: {e}")
 
@@ -144,7 +145,6 @@ if st.session_state.show_calc:
                     labels={'Close': f'환율 ({target_currency})', 'index': '날짜/시간'}
                 )
                 
-                # ★ 수정: 가로 선(Y축 격자)이 뚜렷하게 보이도록 스타일 조정
                 fig.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
                     plot_bgcolor="rgba(255,255,255,0.95)",
@@ -157,7 +157,7 @@ if st.session_state.show_calc:
                     ),
                     yaxis=dict(
                         showgrid=True, 
-                        gridcolor="rgba(200,200,200,0.6)", # 가로줄 진하게 표시
+                        gridcolor="rgba(200,200,200,0.6)",
                         showline=True,
                         linecolor="gray"
                     ),
