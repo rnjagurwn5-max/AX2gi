@@ -100,11 +100,13 @@ with col2:
     if st.session_state.show_calc:
         st.markdown('<h3 style="color: #FFFFFF; margin-bottom: 15px;">💱 환율 변환</h3>', unsafe_allow_html=True)
         
-        base_currency = st.selectbox("보유 통화 (Base)", ["KRW", "USD", "EUR", "JPY", "CNY", "GBP"], index=1)
-        target_currency = st.selectbox("변경 통화 (Target)", ["USD", "KRW", "EUR", "JPY", "CNY", "GBP"], index=1)
+        # ★ 통화 리스트에 몽골 투그릭(MNT) 추가
+        currency_list = ["KRW", "USD", "EUR", "JPY", "CNY", "GBP", "MNT"]
+        
+        base_currency = st.selectbox("보유 통화 (Base)", currency_list, index=1)
+        target_currency = st.selectbox("변경 통화 (Target)", currency_list, index=0)
         amount = st.number_input("금액", min_value=0.0, value=1000.0, step=100.0)
         
-        # ★ 수수료 및 환율 우대율 입력란 추가
         st.markdown("<hr style='margin: 15px 0; border-color: rgba(255,255,255,0.2);'>", unsafe_allow_html=True)
         col_f1, col_f2 = st.columns(2)
         with col_f1:
@@ -126,12 +128,10 @@ with col2:
                             converted = data['conversion_result']
                             rate = data['conversion_rate']
                             
-                            # ★ 수수료 계산 로직 추가
                             actual_fee_rate = (base_fee_pct / 100) * (1 - discount_pct / 100)
                             fee_amount = converted * actual_fee_rate
                             final_amount = converted - fee_amount
                             
-                            # ★ 결과창 업데이트 (수수료 및 최종 수령액 반영)
                             result_html = f"""
                             <div style="background-color: #FFFFFF; color: #000000; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px;">
                                 <div style="font-size: 1.1rem; color: #555555; margin-bottom: 5px;">
@@ -184,9 +184,10 @@ if st.session_state.show_calc:
                 y_margin = (y_max - y_min) * 0.1 
                 if y_margin == 0: y_margin = y_min * 0.001
                 
-                if target_currency in ["KRW", "JPY"]:
-                    axis_tick_format = ",.0f"  
-                    hover_tick_format = ",.2f" 
+                # ★ 변경포인트: MNT(몽골 투그릭)도 원/엔화처럼 단위가 크므로 소수점 제거
+                if target_currency in ["KRW", "JPY", "MNT"]:
+                    axis_tick_format = ",.0f" 
+                    hover_tick_format = ",.2f"
                 else:
                     axis_tick_format = ".4f"
                     hover_tick_format = ".4f"
