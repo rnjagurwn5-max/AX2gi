@@ -40,7 +40,7 @@ page_bg_img = """
 div.stButton > button:first-child { background-color: #6C8EBF !important; color: white !important; border: none !important; border-radius: 8px !important; }
 div.stButton > button:first-child:hover { background-color: #5A7CA6 !important; }
 
-/* 오른쪽 계산기 팝업 배경 (Streamlit 컬럼을 직접 지정) */
+/* 오른쪽 계산기 팝업 배경 */
 div[data-testid="column"]:nth-of-type(2) > div {
     background-color: rgba(30, 34, 42, 0.85); 
     padding: 2.5rem;
@@ -54,13 +54,33 @@ div[data-testid="column"]:nth-of-type(2) > div {
 label { color: #FFFFFF !important; font-weight: bold; }
 div[data-baseweb="select"] > div, input[type="number"] { background-color: #F0F2F6 !important; color: #111111 !important; }
 
-/* 조회 기간 라디오 버튼의 텍스트를 확실한 흰색으로 강제 지정 */
+/* 조회 기간 라디오 버튼 등 */
 .stRadio [data-testid="stMarkdownContainer"] p {
     color: #FFFFFF !important;
     font-weight: 600 !important;
 }
 
-/* 모바일 반응형 미디어 쿼리 (화면 폭이 768px 이하일 때 적용) */
+/* KITA 링크 버튼 디자인 */
+.kita-link-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #2E5BFF;
+    color: #FFFFFF !important;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 30px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+.kita-link-btn:hover {
+    background-color: #1a43d6;
+}
+
+/* 모바일 반응형 미디어 쿼리 */
 @media (max-width: 768px) {
     .title-text {
         font-size: 2.5rem !important; 
@@ -104,6 +124,15 @@ with col2:
         target_currency = st.selectbox("변경 통화 (Target)", ["USD", "KRW", "EUR", "JPY", "CNY", "GBP"], index=1)
         amount = st.number_input("금액", min_value=0.0, value=1000.0, step=100.0)
         
+        st.markdown("<hr style='margin: 15px 0; border-color: rgba(255,255,255,0.2);'>", unsafe_allow_html=True)
+        
+        # ★ 추가: 수수료 및 우대율 설정 영역
+        col_f1, col_f2 = st.columns(2)
+        with col_f1:
+            base_fee_pct = st.number_input("기본 수수료율 (%)", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+        with col_f2:
+            discount_pct = st.number_input("환율 우대율 (%)", min_value=0, max_value=100, value=90, step=10)
+        
         if st.button("계산 실행", use_container_width=True):
             if not API_KEY:
                 st.error("API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.")
@@ -114,14 +143,32 @@ with col2:
                         response = requests.get(url)
                         response.raise_for_status()
                         data = response.json()
+                        
                         if data.get('result') == 'success':
                             converted = data['conversion_result']
                             rate = data['conversion_rate']
+                            
+                            # 수수료 계산 로직
+                            actual_fee_rate = (base_fee_pct / 100) * (1 - discount_pct / 100)
+                            fee_amount = converted * actual_fee_rate
+                            final_amount = converted - fee_amount # 변환된 금액에서 수수료 차감
+                            
                             result_html = f"""
-                            <div style="background-color: #FFFFFF; color: #000000; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.1rem; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                <strong>{amount:,.2f} {base_currency}</strong> = <strong style="color: #2E5BFF; font-size: 1.3rem;">{converted:,.2f} {target_currency}</strong>
-                                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #E0E0E0;">
-                                <span style="font-size: 0.9rem; color: #555555;">적용 환율: 1 {base_currency} = {rate} {target_currency}</span>
+                            <div style="background-color: #FFFFFF; color: #000000; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px;">
+                                <div style="font-size: 1.1rem; color: #555555; margin-bottom: 5px;">
+                                    매매기준율 환산: {converted:,.2f} {target_currency}
+                                </div>
+                                <div style="font-size: 0.95rem; color: #E74C3C; font-weight: bold;">
+                                    - 은행 수수료 ({actual_fee_rate*100:.2f}%): {fee_amount:,.2f} {target_currency}
+                                </div>
+                                <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #CCCCCC;">
+                                <div style="font-size: 1.1rem;">최종 수령액</div>
+                                <div style="font-size: 1.6rem; font-weight: 900; color: #2E5BFF;">
+                                    {final_amount:,.2f} {target_currency}
+                                </div>
+                                <div style="font-size: 0.85rem; color: #888888; margin-top: 12px;">
+                                    적용 환율: 1 {base_currency} = {rate} {target_currency}
+                                </div>
                             </div>
                             """
                             st.markdown(result_html, unsafe_allow_html=True)
@@ -153,16 +200,14 @@ if st.session_state.show_calc:
             hist = ticker.history(period=period, interval=interval)
             
             if not hist.empty:
-                # ★ 변경포인트 1: Y축 범위를 강제로 좁혀 변동폭(다이나믹) 강조
                 y_min = hist['Close'].min()
                 y_max = hist['Close'].max()
-                y_margin = (y_max - y_min) * 0.1 # 상하단 10% 여백만 남김
+                y_margin = (y_max - y_min) * 0.1 
                 if y_margin == 0: y_margin = y_min * 0.001
                 
-                # ★ 변경포인트 2: 통화별 눈금 포맷 최적화 (원/엔화는 거추장스런 소수점 컷)
                 if target_currency in ["KRW", "JPY"]:
-                    axis_tick_format = ",.0f"  # Y축 틱: 정수 표현 (예: 1,350)
-                    hover_tick_format = ",.2f" # 마우스 오버 시: 소수 둘째자리까지 표시
+                    axis_tick_format = ",.0f" 
+                    hover_tick_format = ",.2f"
                 else:
                     axis_tick_format = ".4f"
                     hover_tick_format = ".4f"
@@ -193,8 +238,8 @@ if st.session_state.show_calc:
                         showline=True,
                         linecolor="#D1D5DB",
                         linewidth=1,
-                        tickformat=axis_tick_format, # 맞춤형 포맷 적용
-                        range=[y_min - y_margin, y_max + y_margin] # 강제 확대 스케일링 적용
+                        tickformat=axis_tick_format, 
+                        range=[y_min - y_margin, y_max + y_margin] 
                     ),
                     hovermode="x unified",
                     hoverlabel=dict(
@@ -209,7 +254,7 @@ if st.session_state.show_calc:
                     line_width=2.5,
                     fill='tozeroy',
                     fillcolor='rgba(46, 91, 255, 0.1)',
-                    hovertemplate=f'환율: <b>%{{y:{hover_tick_format}}}</b> {target_currency}<extra></extra>' # 굵게 표시 유지
+                    hovertemplate=f'환율: <b>%{{y:{hover_tick_format}}}</b> {target_currency}<extra></extra>' 
                 )
                 
                 st.plotly_chart(fig, use_container_width=True)
@@ -224,11 +269,21 @@ st.markdown("""
 <div style="background-color: rgba(30, 34, 42, 0.85); padding: 30px; border-radius: 10px; color: white; line-height: 1.6;">
     <h3 style="color: #6C8EBF;">🌐 수입/수출 기업의 환 위험(Exchange Risk) 이해</h3>
     <p>환 위험이란 환율 변동으로 인해 기업의 영업이익이나 자산 가치가 변동할 수 있는 불확실성을 의미합니다.</p>
+    <br>
+    
+    <h3 style="color: #6C8EBF;">📈 환율 절상/절하에 따른 위험과 기회</h3>
+    <p><strong>1. 환율 절상 (자국 통화 가치 상승 / 환율 하락)</strong></p>
     <ul>
-        <li><strong>수출 기업 (외화 수취):</strong> 환율 하락(원화 가치 상승) 시 타격을 받습니다. 제품을 팔고 받은 외화를 원화로 환전할 때 수령 금액이 줄어들기 때문입니다.</li>
-        <li><strong>수입 기업 (외화 지급):</strong> 환율 상승(원화 가치 하락) 시 타격을 받습니다. 물건을 사오기 위해 지불해야 하는 원화 금액이 늘어나 원가 부담이 커지기 때문입니다.</li>
+        <li><strong>수출 기업:</strong> (위험) 외화 대금 환전 시 환차손 발생, 가격 경쟁력 약화 / (기회) 원자재 수입 비중이 높을 경우 제조 원가 하락</li>
+        <li><strong>수입 기업:</strong> (기회) 동일한 외화 결제 대금 대비 자국 통화 지출이 줄어들어 수입 원가 절감 및 마진 확대</li>
+    </ul>
+    <p><strong>2. 환율 절하 (자국 통화 가치 하락 / 환율 상승)</strong></p>
+    <ul>
+        <li><strong>수출 기업:</strong> (기회) 외화 대금 환전 시 환차익 발생, 해외 시장에서의 가격 경쟁력 향상</li>
+        <li><strong>수입 기업:</strong> (위험) 수입 결제 대금 부담이 급증하여 채산성 악화 및 원가 상승 압박</li>
     </ul>
     <br>
+
     <h3 style="color: #6C8EBF;">🛡️ 환 위험 헷지(Hedge) 및 대응 방안</h3>
     <p><strong>1. 대내적 관리 방안 (기업 내부 통제)</strong></p>
     <ul>
@@ -242,5 +297,10 @@ st.markdown("""
         <li><strong>환변동보험:</strong> 한국무역보험공사(K-SURE) 등에서 제공하는 보험으로, 환율 하락으로 인한 손실은 보상받고 환율 상승 시의 이익은 반납하는 구조입니다. 중소기업의 접근성이 좋습니다.</li>
         <li><strong>통화 옵션 (Currency Option):</strong> 미래에 특정 환율로 외화를 매매할 수 있는 '권리'를 사는 것으로, 유리할 때만 권리를 행사할 수 있어 유연성이 높습니다.</li>
     </ul>
+    
+    <!-- ★ 추가: KITA 무역협회 상담 서비스 바로가기 버튼 -->
+    <a href="https://tradesos.kita.net/" target="_blank" class="kita-link-btn">
+        📞 KITA 한국무역협회 수출/수입 상담 서비스 바로가기
+    </a>
 </div>
 """, unsafe_allow_html=True)
