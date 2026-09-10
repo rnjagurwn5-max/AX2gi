@@ -11,17 +11,16 @@ import requests
 import streamlit as st
 import yfinance as yf
 import plotly.express as px
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-# 1. 환경 변수 로드 (.env 파일이 exchange.py와 같은 폴더에 있을 때)
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-load_dotenv(dotenv_path)
+# 1. 환경 변수 자동 탐색 및 로드
+load_dotenv(find_dotenv())
 API_KEY = os.getenv("EXCHANGE_API_KEY")
 
 # 2. 페이지 설정
 st.set_page_config(page_title="실시간 환율 계산기", layout="wide")
 
-# 3. 디자인: CSS 업데이트 (반응형 미디어 쿼리 추가)
+# 3. 디자인: CSS 업데이트 (반응형 유지, 불필요한 태그 충돌 제거)
 page_bg_img = """
 <style>
 /* 심플한 그래픽/도트 스타일의 모던한 세계 지도 배경 */
@@ -41,8 +40,8 @@ page_bg_img = """
 div.stButton > button:first-child { background-color: #6C8EBF !important; color: white !important; border: none !important; border-radius: 8px !important; }
 div.stButton > button:first-child:hover { background-color: #5A7CA6 !important; }
 
-/* 오른쪽 계산기 팝업 배경 (반응형을 위해 클래스로 분리) */
-.calc-container {
+/* 오른쪽 계산기 팝업 배경 (Streamlit 컬럼을 직접 지정) */
+div[data-testid="column"]:nth-of-type(2) > div {
     background-color: rgba(30, 34, 42, 0.85); 
     padding: 2.5rem;
     border-radius: 15px;
@@ -61,18 +60,18 @@ div[data-baseweb="select"] > div, input[type="number"] { background-color: #F0F2
     font-weight: 600 !important;
 }
 
-/* ★ 추가: 모바일 반응형 미디어 쿼리 (화면 폭이 768px 이하일 때 적용) ★ */
+/* 모바일 반응형 미디어 쿼리 (화면 폭이 768px 이하일 때 적용) */
 @media (max-width: 768px) {
     .title-text {
-        font-size: 2.5rem !important; /* 모바일에서 글자 크기 축소 */
-        margin-top: 5vh !important;   /* 모바일에서 상단 여백 축소 */
+        font-size: 2.5rem !important; 
+        margin-top: 5vh !important;   
     }
     .sub-text {
         font-size: 1rem !important;
     }
-    .calc-container {
-        margin-top: 2vh !important;   /* 모바일에서 팝업 여백 축소 */
-        padding: 1.5rem !important;   /* 모바일에서 내부 여백 축소 */
+    div[data-testid="column"]:nth-of-type(2) > div {
+        margin-top: 2vh !important;   
+        padding: 1.5rem !important;   
     }
 }
 </style>
@@ -99,8 +98,6 @@ with col1:
 
 with col2:
     if st.session_state.show_calc:
-        # ★ 수정: 반응형 CSS(calc-container)가 적용되도록 div로 계산기 영역을 감쌈
-        st.markdown('<div class="calc-container">', unsafe_allow_html=True)
         st.markdown('<h3 style="color: #FFFFFF; margin-bottom: 15px;">💱 환율 변환</h3>', unsafe_allow_html=True)
         
         base_currency = st.selectbox("보유 통화 (Base)", ["KRW", "USD", "EUR", "JPY", "CNY", "GBP"], index=1)
@@ -132,9 +129,6 @@ with col2:
                             st.error("환율 정보를 가져오는데 실패했습니다. API 키를 확인해주세요.")
                     except Exception as e:
                         st.error(f"오류가 발생했습니다: {e}")
-        
-        # div 태그 닫기
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # 6. 하단: 환율 변동 그래프 섹션
 if st.session_state.show_calc:
@@ -168,23 +162,40 @@ if st.session_state.show_calc:
                 
                 fig.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(255,255,255,0.95)",
-                    font=dict(color="black"),
+                    plot_bgcolor="#FFFFFF",
+                    font=dict(color="#333333"),
                     xaxis=dict(
+                        title="날짜/시간",
                         showgrid=True, 
-                        gridcolor="rgba(200,200,200,0.4)",
+                        gridcolor="#E5E7EB",
                         showline=True,
-                        linecolor="gray"
+                        linecolor="#D1D5DB",
+                        linewidth=1
                     ),
                     yaxis=dict(
+                        title=f"환율 ({target_currency})",
                         showgrid=True, 
-                        gridcolor="rgba(200,200,200,0.6)",
+                        gridcolor="#E5E7EB",
                         showline=True,
-                        linecolor="gray"
+                        linecolor="#D1D5DB",
+                        linewidth=1,
+                        tickformat=".4f"
                     ),
-                    hovermode="x unified"
+                    hovermode="x unified",
+                    hoverlabel=dict(
+                        bgcolor="white",
+                        font_size=14,
+                        bordercolor="#D1D5DB"
+                    )
                 )
-                fig.update_traces(line_color='#2E5BFF', line_width=2.5)
+                
+                fig.update_traces(
+                    line_color='#2E5BFF', 
+                    line_width=2.5,
+                    fill='tozeroy',
+                    fillcolor='rgba(46, 91, 255, 0.1)',
+                    hovertemplate=f'환율: <b>%{{y}}</b> {target_currency}<extra></extra>'
+                )
                 
                 st.plotly_chart(fig, use_container_width=True)
             else:
