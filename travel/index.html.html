@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>몽골 4박 5일 핵심 여행 - 대자연 속으로</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            100: '#E6F0E6',
+                            500: '#4A7C59',
+                            700: '#2F4F38',
+                            dark: '#1a1a1a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth scrolling for anchor links */
+        html { scroll-behavior: smooth; }
+        
+        /* Custom styles for Hero section background */
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); /* Mongolia Steppe */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Image hover effect */
+        .img-hover-zoom {
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .img-hover-zoom img {
+            transition: transform 0.5s ease;
+        }
+        .img-hover-zoom:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Card styles */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased font-sans">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-horse-head text-brand-500 text-2xl"></i>
+                    <span class="font-bold text-xl text-gray-900 tracking-tight">Mongolia<span class="text-brand-500">Trip</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#overview" class="text-gray-700 hover:text-brand-500 font-medium transition">여행 개요</a>
+                    <a href="#itinerary" class="text-gray-700 hover:text-brand-500 font-medium transition">상세 일정</a>
+                    <a href="#gallery" class="text-gray-700 hover:text-brand-500 font-medium transition">갤러리</a>
+                    <a href="#info" class="text-gray-700 hover:text-brand-500 font-medium transition">여행 정보</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-brand-500 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full">
+            <a href="#overview" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-500 hover:bg-gray-50 rounded-md">여행 개요</a>
+            <a href="#itinerary" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-500 hover:bg-gray-50 rounded-md">상세 일정</a>
+            <a href="#gallery" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-500 hover:bg-gray-50 rounded-md">갤러리</a>
+            <a href="#info" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-500 hover:bg-gray-50 rounded-md">여행 정보</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-bg h-screen flex items-center justify-center pt-16 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <span class="inline-block py-1 px-3 rounded-full bg-brand-500/80 text-white text-sm font-semibold tracking-wider mb-4 border border-brand-500/30">BEST SELLER</span>
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                끝없는 초원과 은하수,<br>
+                <span class="text-brand-100">몽골 4박 5일</span> 핵심 일주
+            </h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto drop-shadow-md font-light">
+                울란바토르 시내부터 테를지의 푸른 초원, 그리고 차강소브라가의 웅장한 붉은 절벽까지. 짧지만 강렬한 몽골 대자연 탐험.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#itinerary" class="bg-brand-500 hover:bg-brand-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    일정 보기 <i class="fa-solid fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#overview" class="text-white opacity-80 hover:opacity-100">
+                <i class="fa-solid fa-chevron-down text-3xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Overview Section -->
+    <section id="overview" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">왜 이 코스인가요?</h2>
+                <div class="w-24 h-1 bg-brand-500 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                    시간이 부족한 직장인을 위한 최적의 동선. 고비사막의 매력을 느낄 수 있는 차강소브라가와 접근성이 뛰어난 힐링 명소 테를지를 모두 방문합니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Highlight 1 -->
+                <div class="glass-card p-8 rounded-2xl text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-xl border border-gray-100 bg-white">
+                    <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-mountain-sun text-brand-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">미니 그랜드 캐니언</h3>
+                    <p class="text-gray-600">수백만 년 전 바다였던 지형이 융기하여 만들어진 웅장한 붉은 절벽, '차강소브라가'에서의 압도적인 경험.</p>
+                </div>
+                <!-- Highlight 2 -->
+                <div class="glass-card p-8 rounded-2xl text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-xl border border-gray-100 bg-white">
+                    <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-campground text-brand-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">전통 게르 & 밤하늘</h3>
+                    <p class="text-gray-600">유목민의 거처인 게르(여행자용 고급 게르)에서 숙박하며 빛 공해 없는 청정 하늘에서 쏟아지는 은하수 감상.</p>
+                </div>
+                <!-- Highlight 3 -->
+                <div class="glass-card p-8 rounded-2xl text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-xl border border-gray-100 bg-white">
+                    <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-horse text-brand-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">초원 승마 & 허르헉</h3>
+                    <p class="text-gray-600">테를지 국립공원의 드넓은 초원을 달리는 승마 체험과 몽골 전통 양고기 요리인 '허르헉' 특식 제공.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itinerary Section -->
+    <section id="itinerary" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">4박 5일 상세 일정표</h2>
+                <div class="w-24 h-1 bg-brand-500 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-600 text-lg">울란바토르 - 차강소브라가 - 테를지 - 울란바토르</p>
+            </div>
+
+            <div class="relative wrap overflow-hidden">
+                <div class="absolute border-opacity-20 border-brand-500 h-full border-l-2 left-4 md:left-1/2 transform md:-translate-x-1/2"></div>
+                
+                <!-- Day 1 -->
+                <div class="mb-12 flex justify-between items-center w-full right-timeline flex-col md:flex-row">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-brand-500 shadow-xl w-10 h-10 rounded-full absolute left-4 md:left-1/2 transform -translate-x-1/2 md:translate-x-[-50%] justify-center">
+                        <h1 class="mx-auto font-semibold text-lg text-white">1</h1>
+                    </div>
+                    <div class="order-1 glass-card rounded-2xl w-full md:w-5/12 px-6 py-6 pl-16 md:pl-6 mt-4 md:mt-0 text-left relative">
+                        <h3 class="mb-3 font-bold text-gray-900 text-xl border-b pb-2 flex items-center justify-between">
+                            <span>출발 및 울란바토르 도착</span>
+                            <span class="text-sm font-normal text-brand-500 bg-brand-100 px-2 py-1 rounded">울란바토르</span>
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                            <li><i class="fa-regular fa-clock w-5 text-center text-gray-400"></i> 인천국제공항 출발 (비행 약 3.5시간)</li>
+                            <li><i class="fa-solid fa-plane-arrival w-5 text-center text-gray-400"></i> 울란바토르 칭기즈칸 국제공항 도착</li>
+                            <li><i class="fa-solid fa-bus w-5 text-center text-gray-400"></i> 가이드 미팅 후 시내로 이동 및 환전/장보기</li>
+                            <li><i class="fa-solid fa-city w-5 text-center text-gray-400"></i> 수흐바타르 광장 등 시내 가벼운 투어 (시간에 따라 변동)</li>
+                        </ul>
+                        <div class="flex items-center text-sm font-medium text-gray-700 bg-gray-100 p-3 rounded-lg">
+                            <i class="fa-solid fa-bed text-brand-500 mr-2"></i> 숙소: 울란바토르 시내 4성급 호텔
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="mb-12 flex justify-between flex-row-reverse items-center w-full left-timeline flex-col md:flex-row">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-brand-500 shadow-xl w-10 h-10 rounded-full absolute left-4 md:left-1/2 transform -translate-x-1/2 md:translate-x-[-50%] justify-center">
+                        <h1 class="mx-auto text-white font-semibold text-lg">2</h1>
+                    </div>
+                    <div class="order-1 glass-card rounded-2xl w-full md:w-5/12 px-6 py-6 pl-16 md:pl-6 mt-4 md:mt-0 text-left relative">
+                        <h3 class="mb-3 font-bold text-gray-900 text-xl border-b pb-2 flex items-center justify-between">
+                            <span>붉은 절벽, 차강소브라가</span>
+                            <span class="text-sm font-normal text-red-500 bg-red-50 px-2 py-1 rounded">차강소브라가</span>
+                        </h3>
+                        <img src="https://images.unsplash.com/photo-1549488812-3f8c857434a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="차강소브라가 절벽" class="w-full h-40 object-cover rounded-lg mb-4" onerror="this.src='https://placehold.co/600x400/4A7C59/white?text=Tsagaan+Suvarga'">
+                        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                            <li><i class="fa-solid fa-truck-monster w-5 text-center text-gray-400"></i> 조식 후 남고비 지역으로 이동 (차량 약 6-7시간)</li>
+                            <li><i class="fa-solid fa-road w-5 text-center text-gray-400"></i> 끝없는 초원과 비포장도로 오프로드 체험</li>
+                            <li><i class="fa-solid fa-mountain w-5 text-center text-gray-400"></i> 몽골의 그랜드캐년 <strong>차강소브라가(하얀 불탑)</strong> 트레킹</li>
+                            <li><i class="fa-solid fa-camera w-5 text-center text-gray-400"></i> 해 질 녘 붉게 물드는 절벽을 배경으로 인생사진 촬영</li>
+                            <li><i class="fa-solid fa-star w-5 text-center text-yellow-500"></i> 야간: 쏟아지는 별과 은하수 관측</li>
+                        </ul>
+                        <div class="flex items-center text-sm font-medium text-gray-700 bg-gray-100 p-3 rounded-lg">
+                            <i class="fa-solid fa-campground text-brand-500 mr-2"></i> 숙소: 여행자용 게르 (현대식, 공용 온수 샤워)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="mb-12 flex justify-between items-center w-full right-timeline flex-col md:flex-row">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-brand-500 shadow-xl w-10 h-10 rounded-full absolute left-4 md:left-1/2 transform -translate-x-1/2 md:translate-x-[-50%] justify-center">
+                        <h1 class="mx-auto font-semibold text-lg text-white">3</h1>
+                    </div>
+                    <div class="order-1 glass-card rounded-2xl w-full md:w-5/12 px-6 py-6 pl-16 md:pl-6 mt-4 md:mt-0 text-left relative">
+                        <h3 class="mb-3 font-bold text-gray-900 text-xl border-b pb-2 flex items-center justify-between">
+                            <span>초원의 품으로, 테를지</span>
+                            <span class="text-sm font-normal text-green-600 bg-green-50 px-2 py-1 rounded">테를지 국립공원</span>
+                        </h3>
+                        <img src="https://images.unsplash.com/photo-1616688753232-23c28581f1ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="테를지 국립공원" class="w-full h-40 object-cover rounded-lg mb-4" onerror="this.src='https://placehold.co/600x400/4A7C59/white?text=Terelj+National+Park'">
+                        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                            <li><i class="fa-solid fa-bus w-5 text-center text-gray-400"></i> 조식 후 테를지 국립공원으로 이동 (차량 약 5-6시간)</li>
+                            <li><i class="fa-solid fa-tree w-5 text-center text-gray-400"></i> 푸른 초원과 기암괴석이 어우러진 대자연 풍경 감상</li>
+                            <li><i class="fa-solid fa-monument w-5 text-center text-gray-400"></i> 테를지 랜드마크 <strong>거북바위</strong> 방문</li>
+                            <li><i class="fa-solid fa-horse w-5 text-center text-gray-400"></i> 드넓은 초원을 달리는 <strong>승마 체험</strong> (1시간)</li>
+                            <li><i class="fa-solid fa-fire text-orange-500 w-5 text-center"></i> 저녁 특식: 몽골 전통 양고기 찜 <strong>'허르헉'</strong></li>
+                        </ul>
+                        <div class="flex items-center text-sm font-medium text-gray-700 bg-gray-100 p-3 rounded-lg">
+                            <i class="fa-solid fa-campground text-brand-500 mr-2"></i> 숙소: 프리미엄 여행자 게르 (난방/개별 화장실 구비)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 4 -->
+                <div class="mb-12 flex justify-between flex-row-reverse items-center w-full left-timeline flex-col md:flex-row">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-brand-500 shadow-xl w-10 h-10 rounded-full absolute left-4 md:left-1/2 transform -translate-x-1/2 md:translate-x-[-50%] justify-center">
+                        <h1 class="mx-auto text-white font-semibold text-lg">4</h1>
+                    </div>
+                    <div class="order-1 glass-card rounded-2xl w-full md:w-5/12 px-6 py-6 pl-16 md:pl-6 mt-4 md:mt-0 text-left relative">
+                        <h3 class="mb-3 font-bold text-gray-900 text-xl border-b pb-2 flex items-center justify-between">
+                            <span>명상과 역사, 시내 투어</span>
+                            <span class="text-sm font-normal text-brand-500 bg-brand-100 px-2 py-1 rounded">테를지/울란바토르</span>
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                            <li><i class="fa-solid fa-om w-5 text-center text-gray-400"></i> 새벽의 고요함을 느끼며 <strong>아리야발 사원</strong> 명상 트레킹</li>
+                            <li><i class="fa-solid fa-statue w-5 text-center text-gray-400"></i> 40m 거대 은동상, <strong>칭기즈칸 마동상</strong> 방문 (내부 전망대)</li>
+                            <li><i class="fa-solid fa-bus w-5 text-center text-gray-400"></i> 울란바토르 시내로 귀환</li>
+                            <li><i class="fa-solid fa-city w-5 text-center text-gray-400"></i> <strong>자이승 승전탑</strong>에서 울란바토르 전경 및 야경 조망</li>
+                            <li><i class="fa-solid fa-bag-shopping w-5 text-center text-gray-400"></i> 국영 백화점 또는 캐시미어 팩토리 아울렛 쇼핑 (선택)</li>
+                        </ul>
+                        <div class="flex items-center text-sm font-medium text-gray-700 bg-gray-100 p-3 rounded-lg">
+                            <i class="fa-solid fa-bed text-brand-500 mr-2"></i> 숙소: 울란바토르 시내 4성급 호텔
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 5 -->
+                <div class="mb-12 flex justify-between items-center w-full right-timeline flex-col md:flex-row">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-brand-500 shadow-xl w-10 h-10 rounded-full absolute left-4 md:left-1/2 transform -translate-x-1/2 md:translate-x-[-50%] justify-center">
+                        <h1 class="mx-auto font-semibold text-lg text-white">5</h1>
+                    </div>
+                    <div class="order-1 glass-card rounded-2xl w-full md:w-5/12 px-6 py-6 pl-16 md:pl-6 mt-4 md:mt-0 text-left relative">
+                        <h3 class="mb-3 font-bold text-gray-900 text-xl border-b pb-2 flex items-center justify-between">
+                            <span>여행 마무리 및 귀국</span>
+                            <span class="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">공항</span>
+                        </h3>
+                        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                            <li><i class="fa-solid fa-mug-hot w-5 text-center text-gray-400"></i> 호텔 조식 후 체크아웃</li>
+                            <li><i class="fa-solid fa-van-shuttle w-5 text-center text-gray-400"></i> 칭기즈칸 국제공항으로 이동 (공항 샌딩)</li>
+                            <li><i class="fa-solid fa-plane-departure w-5 text-center text-gray-400"></i> 울란바토르 출발</li>
+                            <li><i class="fa-solid fa-house w-5 text-center text-gray-400"></i> 인천국제공항 도착 및 해산</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">사진으로 보는 몽골</h2>
+                <div class="w-24 h-1 bg-brand-500 mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="img-hover-zoom col-span-2 row-span-2">
+                    <img src="https://images.unsplash.com/photo-1595859702951-6962294191d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="몽골 밤하늘 은하수" class="w-full h-full object-cover rounded-lg shadow-md" onerror="this.src='https://placehold.co/800x800/1a1a2e/white?text=Milky+Way'">
+                </div>
+                <div class="img-hover-zoom">
+                    <img src="https://images.unsplash.com/photo-1549488812-3f8c857434a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="고비 사막 풍경" class="w-full h-full object-cover rounded-lg shadow-md" onerror="this.src='https://placehold.co/400x400/c2b280/white?text=Gobi+Desert'">
+                </div>
+                <div class="img-hover-zoom">
+                    <img src="https://images.unsplash.com/photo-1616688753232-23c28581f1ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="테를지 승마" class="w-full h-48 md:h-full object-cover rounded-lg shadow-md" onerror="this.src='https://placehold.co/400x400/4A7C59/white?text=Horse+Riding'">
+                </div>
+                <div class="img-hover-zoom col-span-2 md:col-span-1">
+                    <img src="https://images.unsplash.com/photo-1616782390885-3001e4a64d2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="유목민 게르" class="w-full h-48 md:h-full object-cover rounded-lg shadow-md" onerror="this.src='https://placehold.co/400x400/e2e8f0/gray?text=Traditional+Ger'">
+                </div>
+                <div class="img-hover-zoom">
+                    <img src="https://images.unsplash.com/photo-1522778524458-3860bb4a9d70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="푸르공 오프로드" class="w-full h-48 md:h-full object-cover rounded-lg shadow-md" onerror="this.src='https://placehold.co/400x400/cbd5e1/gray?text=Offroad'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Info Section -->
+    <section id="info" class="py-20 bg-brand-100/50 relative overflow-hidden">
+        <!-- Decorative blob -->
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">여행 필수 정보 및 준비물</h2>
+                <div class="w-24 h-1 bg-brand-500 mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation text-brand-500"></i> 꼭 알아두세요
+                    </h3>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-semibold text-gray-800">날씨와 기온차:</span> 몽골은 일교차가 매우 큽니다. 여름(6~8월)에 가더라도 밤에 별을 볼 때는 경량 패딩이나 두꺼운 겉옷이 필수입니다.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-semibold text-gray-800">차량 이동 (오프로드):</span> 차강소브라가 등 외곽 이동 시 비포장도로 구간이 길어 덜컹거림이 심합니다. <strong>멀미약</strong>을 꼭 챙기세요.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check text-green-500 mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-semibold text-gray-800">게르 숙박 시설:</span> 여행자용 게르는 침대와 침구가 제공되나, 공용 화장실과 샤워실을 이용하는 경우가 많습니다. 온수와 전기 사용 시간이 제한될 수 있습니다.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-suitcase text-brand-500"></i> 준비물 체크리스트
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 text-gray-600 text-sm">
+                        <ul class="space-y-2 list-disc list-inside marker:text-brand-500">
+                            <li>여권 (만료일 6개월 이상)</li>
+                            <li>바람막이 & 경량 패딩</li>
+                            <li>편한 운동화 (트레킹용)</li>
+                            <li>모자, 선글라스, 선크림</li>
+                            <li>멀미약, 개인 상비약</li>
+                        </ul>
+                        <ul class="space-y-2 list-disc list-inside marker:text-brand-500">
+                            <li>세면도구 (수건 넉넉히)</li>
+                            <li>보조배터리 (필수)</li>
+                            <li>물티슈 & 휴지</li>
+                            <li>마스크 (먼지 대비)</li>
+                            <li>작은 크로스백 (현금용)</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 p-4 bg-yellow-50 rounded-lg text-sm text-yellow-800 border border-yellow-100 flex items-start">
+                        <i class="fa-solid fa-lightbulb mt-1 mr-2 text-yellow-500"></i>
+                        <p><strong>Tip:</strong> 외곽 지역은 카드 결제가 어려운 곳이 많습니다. 울란바토르 시내에서 환전(투그릭)하여 약간의 현금을 소지하는 것이 좋습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA & Footer -->
+    <section class="bg-brand-700 py-16 text-center px-4">
+        <h2 class="text-3xl font-bold text-white mb-6">지금 바로 몽골 대자연 속으로 떠나보세요!</h2>
+        <p class="text-brand-100 mb-8 max-w-xl mx-auto">4박 5일 동안 몽골의 진면목을 경험할 수 있는 최적의 일정입니다. 소규모 단독 투어나 동행 매칭을 통해 잊지 못할 추억을 만드세요.</p>
+        <button class="bg-white text-brand-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg transform hover:-translate-y-1" onclick="alert('예약 페이지로 이동하는 기능은 데모 버전에서 비활성화되어 있습니다.')">
+            여행 상담 및 예약하기
+        </button>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
+        <div class="flex justify-center gap-4 mb-4">
+            <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+            <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+            <a href="#" class="hover:text-white transition"><i class="fa-brands fa-youtube text-xl"></i></a>
+        </div>
+        <p>&copy; 2026 MongoliaTrip. All rights reserved.</p>
+        <p class="mt-2 text-gray-500">본 웹페이지는 몽골 여행 4박 5일 추천 일정을 안내하기 위한 데모 사이트입니다.</p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        const mobileLinks = menu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // Navbar blur effect on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-white/95', 'shadow-md');
+                navbar.classList.remove('bg-white/90', 'shadow-sm');
+            } else {
+                navbar.classList.remove('bg-white/95', 'shadow-md');
+                navbar.classList.add('bg-white/90', 'shadow-sm');
+            }
+        });
+    </script>
+</body>
+</html>
