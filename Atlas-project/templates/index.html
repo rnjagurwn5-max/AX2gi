@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATLAS - 물류 거점 의사결정 보조 도구</title>
+    <!-- Leaflet 지도 라이브러리 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- 면책 조항 -->
+    <div id="disclaimer">
+        <strong>[주의]</strong> 이 프로젝트는 의사결정 보조 도구입니다. 수집 결과가 없다고 정상 운영을 뜻하지 않으며, 표시된 대체항로가 실제로 운항 가능하다는 뜻도 아닙니다. 실제 운송 전에는 선사·항공사·터미널·세관·보험사 정보를 반드시 확인하십시오.
+    </div>
+    
+    <div id="app-container">
+        <!-- 세계 지도 영역 -->
+        <div id="map"></div>
+        
+        <!-- 데이터 패널 영역 -->
+        <div id="sidebar">
+            <h2>거점 분석</h2>
+            <div id="info-panel">
+                <p>지도에서 거점 마커를 선택해 주세요.</p>
+            </div>
+            
+            <hr>
+            <h2>우회 시나리오</h2>
+            <button onclick="compareScenario()">수에즈 운하 vs 희망봉 비교</button>
+            <div id="scenario-panel"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</body>
+</html>

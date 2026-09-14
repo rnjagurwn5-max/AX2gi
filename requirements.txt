@@ -6,3 +6,6 @@ streamlit-folium
 folium
 yfinance
 plotly
+
+Flask==3.0.0
+feedparser==6.0.10

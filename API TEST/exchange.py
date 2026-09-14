@@ -268,4 +268,4 @@ st.markdown("""
         <li><strong>통화 옵션 (Currency Option):</strong> 미래에 특정 환율로 외화를 매매할 수 있는 '권리'를 사는 것으로, 유리할 때만 권리를 행사할 수 있어 유연성이 높습니다.</li>
     </ul>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True) 
