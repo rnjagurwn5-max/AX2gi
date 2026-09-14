@@ -29,7 +29,7 @@ EXCHANGE_API_KEY = os.getenv("EXCHANGE_API_KEY")
 SEOUL_PHOTO = "https://images.unsplash.com/photo-1662300835077-73c417630ff5?auto=format&fit=crop&w=2200&q=85"
 PHOTO_SOURCE = "https://unsplash.com/photos/YqgOH-ewy6Q"
 
-st.set_page_config(page_title="오모먹 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="오모먹 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
 def esc(value):
     return html.escape(str(value or ""), quote=True)
@@ -45,6 +45,8 @@ def markup(value):
 markup("""<style>
 :root {color-scheme:light; --ink:#17191d; --muted:#777e86; --green:#268349;}
 .stApp {background:#fff; color:var(--ink);}
+[data-testid="stSidebar"] {background:#f7f9f7; border-right:1px solid #e3e9e4;}
+[data-testid="stSidebar"] h2 {font-size:23px; color:#284b35;}
 [data-testid="stHeader"] {background:rgba(255,255,255,.95);}
 .block-container {max-width:1440px; padding:2.2rem 3rem 3rem;}
 html {scroll-behavior:smooth;}
@@ -163,12 +165,6 @@ def recommend_menu_by_weather(temp, description):
     if temp >= 5: return "따뜻한 한 끼가 생각나는 날", "칼국수, 샤브샤브, 보글보글 전골", "칼국수"
     return "뜨끈하게 속을 채워요", "순대국과 뚝배기 해장국", "순대국"
 
-@st.cache_data(ttl=3600, show_spinner=False)
-def get_exchange_rate(api_key, base="USD"):
-    if not api_key: return None
-    data = request_json(f"https://v6.exchangerate-api.com/v6/{api_key}/latest/{base}")
-    return data.get("conversion_rates") if data else None
-
 @st.cache_data(ttl=600, show_spinner=False)
 def search_places(query, rest_key):
     data = request_json("https://dapi.kakao.com/v2/local/search/keyword.json", headers={"Authorization":f"KakaoAK {rest_key}"}, params={"query":query,"size":8})
@@ -200,11 +196,42 @@ def select_theme(theme):
         keyword = {"전체":"맛집", "카페":"카페", "날씨별 추천":quick_keyword, "지역별 명소":"가볼만한곳 명소"}.get(theme, "맛집")
         state.search_mode, state.search_query = "keyword", f"{state.region_input.strip() or '강남역'} {keyword}"
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_exchange_rate(api_key, base="USD"):
+    if not api_key:
+        return None
+    data = request_json(f"https://v6.exchangerate-api.com/v6/{api_key}/latest/{base}")
+    return data.get("conversion_rates") if data else None
+
+with st.sidebar:
+    st.header("💱 환율 계산기")
+    st.caption("여행 전, 필요한 금액을 확인해 보세요.")
+    base_cur = st.selectbox("기준 통화", ["USD", "EUR", "JPY", "KRW"], key="exchange_base")
+    amount = st.number_input("금액", min_value=0.0, value=100.0, step=10.0, key="exchange_amount")
+    target_cur = st.selectbox("변환 통화", ["KRW", "USD", "EUR", "JPY"], key="exchange_target")
+    if not EXCHANGE_API_KEY:
+        st.info("EXCHANGE_API_KEY를 설정하면 환율을 계산할 수 있어요.")
+    else:
+        rates = get_exchange_rate(EXCHANGE_API_KEY, base_cur)
+        rate = (rates or {}).get(target_cur)
+        if isinstance(rate, (int, float)) and math.isfinite(rate) and rate > 0:
+            st.caption(f"{amount:,.2f} {base_cur} 환산 금액")
+            st.metric("환산 결과", f"{amount * rate:,.2f} {target_cur}")
+            st.caption(f"1 {base_cur} = {rate:,.4f} {target_cur}")
+        else:
+            st.warning("환율 정보를 불러오지 못했어요. API 설정을 확인해 주세요.")
+        if st.button("환율 새로고침", use_container_width=True):
+            get_exchange_rate.clear()
+            st.rerun()
+    st.divider()
+    st.caption("ExchangeRate-API 제공 · 조회 결과는 최대 1시간 보관됩니다. 실제 환전 금액에는 수수료가 반영될 수 있습니다.")
+
 current_temp, weather_desc = get_current_weather(WEATHER_API_KEY)
 weather_title, food_desc, quick_keyword = recommend_menu_by_weather(current_temp, weather_desc)
 
 markup('<div id="top"></div><div class="notice"><b>오늘의 작은 여행</b> 익숙한 동네에서 발견하는 새로운 한 끼</div>')
-markup('''<nav class="nav"><a class="logo" href="#top">오모먹<span style="color:#268349">.</span><small>OH! MORE TASTE</small></a><div class="nav-links"><a href="#discover">맛집 찾기</a><a class="optional" href="#collections">테마 컬렉션</a><a class="optional" href="#travel">여행 도구</a><a class="nav-cta" href="#discover">오늘의 맛집 찾기 ↗</a></div></nav>''')
+# '여행 도구' 네비게이션 링크 제거
+markup('''<nav class="nav"><a class="logo" href="#top">오모먹<span style="color:#268349">.</span><small>OH! MORE TASTE</small></a><div class="nav-links"><a href="#discover">맛집 찾기</a><a class="optional" href="#collections">테마 컬렉션</a><a class="nav-cta" href="#discover">오늘의 맛집 찾기 ↗</a></div></nav>''')
 markup(f'''<section class="hero" style="--seoul:url('{SEOUL_PHOTO}')"><div class="eyebrow">A TASTE OF SEOUL</div><h1>오늘 뭐 먹지?<br>서울에서 맛있는 답을 찾다.</h1><p>골목 속 작은 식당부터, 한 번쯤 가보고 싶은 맛집까지.<br>당신의 다음 한 끼를 오모먹과 함께 발견해 보세요.</p><div class="location">SEOUL, SOUTH KOREA</div><a class="photo-credit" href="{PHOTO_SOURCE}" target="_blank" rel="noopener noreferrer">Photo · Minku Kang / Unsplash</a></section>''')
 markup('<section class="intro" id="discover"><div class="green">취향에 맞게, 맛있게</div><h2>어떤 맛집을 찾고 있나요?</h2><p>지역과 테마를 고르면, 오늘의 목적지가 정해져요.</p></section>')
 
@@ -331,16 +358,4 @@ if st.session_state.app_started:
             if points: m.fit_bounds(points, padding=(35,35), max_zoom=15)
             st_folium(m, use_container_width=True, height=520, returned_objects=[], key=f"map_{st.session_state.search_query}")
 
-markup('<div id="travel"></div>')
-with st.expander("여행을 준비한다면 · 환율 계산기", expanded=False):
-    if not EXCHANGE_API_KEY:
-        st.caption("기존 .env 파일에 EXCHANGE_API_KEY를 설정하면 이용할 수 있습니다.")
-    else:
-        a, b, c = st.columns(3)
-        with a: base_cur = st.selectbox("기준 통화", ["USD", "EUR", "JPY", "KRW"])
-        with b: amount = st.number_input("금액", min_value=0.0, value=100.0, step=10.0)
-        with c: target_cur = st.selectbox("변환 통화", ["KRW", "USD", "EUR", "JPY"])
-        rates = get_exchange_rate(EXCHANGE_API_KEY, base_cur)
-        if rates and target_cur in rates:
-            st.success(f"{amount:,.2f} {base_cur} = {amount * rates[target_cur]:,.2f} {target_cur}")
-            st.caption("환율은 최대 1시간 캐시됩니다. 실제 환전 시 적용되는 금액은 수수료 등에 따라 달라질 수 있습니다.")
+markup('<footer class="footer"><div><b>오모먹.</b><p>오늘 뭐 먹지? 맛있는 일상의 시작.</p></div><div>장소 · Kakao / 날씨 · OpenWeather / 환율 · ExchangeRate-API<br>서울에서 시작하는 맛있는 발견.</div></footer>')
