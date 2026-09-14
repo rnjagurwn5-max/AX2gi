@@ -24,11 +24,12 @@ except ImportError:
 
 KAKAO_REST_KEY = os.getenv("KAKAO_REST_API_KEY")
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY") or os.getenv("WEATHER_API_KEY")
 EXCHANGE_API_KEY = os.getenv("EXCHANGE_API_KEY")
 SEOUL_PHOTO = "https://images.unsplash.com/photo-1662300835077-73c417630ff5?auto=format&fit=crop&w=2200&q=85"
 PHOTO_SOURCE = "https://unsplash.com/photos/YqgOH-ewy6Q"
 
-st.set_page_config(page_title="오맛발 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="오모먹 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
 
 def esc(value):
     return html.escape(str(value or ""), quote=True)
@@ -87,6 +88,12 @@ button[kind="primary"], [data-testid="stBaseButton-primary"], [data-testid="stBa
 .collection-body h3 {font-size:16px; padding:0; margin:0 0 7px;}
 .collection-body p {font-size:12px; color:#7b8189; margin:0;}
 .weather {background:#f2f7f2; padding:21px 24px; border-radius:13px; margin:25px 0 12px; color:#284b35;}
+.weather {background:#f2f7f2; padding:21px 24px; border-radius:13px; margin:25px 0 12px; color:#284b35; display:flex; align-items:center; justify-content:space-between; gap:32px;}
+.weather-menu {flex:1; min-width:0;}
+.weather-today {flex:1.2; display:flex; align-items:center; justify-content:center; gap:24px; border-left:1px solid #d7e4d9; padding:8px 20px 8px 32px; min-width:0;}
+.weather-icon {font-size:52px; line-height:1;}
+.weather-temperature {font-size:46px; font-weight:800; line-height:1.15; letter-spacing:-2px; margin:6px 0; color:#284b35;}
+.weather-condition {font-size:15px; font-weight:600; color:#42634c; overflow-wrap:anywhere;}
 .weather small {font-size:11px; color:#62796a; letter-spacing:.5px;}
 .weather strong {display:block; margin:6px 0; font-size:19px;}
 .weather p {margin:0; color:#62796a; font-size:13px;}
@@ -107,6 +114,9 @@ button[kind="primary"], [data-testid="stBaseButton-primary"], [data-testid="stBa
 .footer {border-top:1px solid #eceef1; margin-top:50px; padding-top:26px; display:flex; justify-content:space-between; gap:20px; font-size:12px; color:#8a9097;}
 .footer b {font-size:20px; color:#17191d; letter-spacing:-1px;}
 @media(max-width:760px) {
+ .weather {flex-direction:column; align-items:stretch; gap:20px;}
+ .weather-today {border-left:0; border-top:1px solid #d7e4d9; padding:20px 0 0; justify-content:flex-start;}
+ .weather-temperature {font-size:38px;}.weather-icon {font-size:44px;}
  .block-container {padding:1.3rem 1rem 2rem;}
  .nav {padding:22px 0;}.nav-links {gap:14px; font-size:12px;}.nav-links .optional,.logo small {display:none;}
  .nav .nav-cta {padding:10px 12px;}.hero {min-height:370px; border-radius:14px;}
@@ -237,6 +247,20 @@ if not st.session_state.app_started:
 
 weather_label = f"서울 기준 · {current_temp:.1f}°C · {weather_desc}" if current_temp is not None else weather_desc
 markup(f'<div class="weather"><small>{esc(weather_label)}</small><strong>{esc(weather_title)}</strong><p>{esc(food_desc)}</p></div>')
+if current_temp is not None:
+    weather_icon = "🌤️"
+    for keyword, icon in [("맑", "☀️"), ("구름", "⛅"), ("흐", "☁️"), ("안개", "🌫️"), ("비", "🌧️"), ("소나기", "🌧️"), ("눈", "🌨️"), ("천둥", "⛈️")]:
+        if keyword in weather_desc:
+            weather_icon = icon
+    temperature_text = f"{current_temp:.1f}°C"
+    condition_text = weather_desc or "날씨 설명 없음"
+else:
+    weather_icon = "🌡️"
+    temperature_text = "— °C"
+    condition_text = "날씨 연결 대기" if not WEATHER_API_KEY else "날씨 조회 실패"
+weather_note = "서울 날씨에 맞춘 메뉴 추천" if current_temp is not None else weather_desc
+weather_meta = "OpenWeather 제공 · 서울 기준" if current_temp is not None else "날씨 정보가 연결되면 표시됩니다"
+markup(f'<div class="weather"><div class="weather-menu"><small>{esc(weather_note)}</small><strong>{esc(weather_title)}</strong><p>{esc(food_desc)}</p></div><div class="weather-today"><span class="weather-icon" aria-hidden="true">{weather_icon}</span><div><small>오늘의 서울 날씨 · 현재 기온</small><div class="weather-temperature">{temperature_text}</div><div class="weather-condition">{esc(condition_text)}</div><small>{weather_meta}</small></div></div></div>')
 st.button(f"{st.session_state.region_input.strip() or '강남역'} {quick_keyword} 찾아보기 →", on_click=select_theme, args=("날씨별 추천",))
 
 if not DOTENV_AVAILABLE:
@@ -320,5 +344,3 @@ with st.expander("여행을 준비한다면 · 환율 계산기", expanded=False
         if rates and target_cur in rates:
             st.success(f"{amount:,.2f} {base_cur} = {amount * rates[target_cur]:,.2f} {target_cur}")
             st.caption("환율은 최대 1시간 캐시됩니다. 실제 환전 시 적용되는 금액은 수수료 등에 따라 달라질 수 있습니다.")
-        else: st.warning("환율 정보를 불러오지 못했어요. API 설정을 확인해 주세요.")
-markup('<footer class="footer"><div><b>오모먹.</b><p>오늘 뭐 먹지? 맛있는 일상의 시작.</p></div><div>장소 · Kakao / 날씨 · OpenWeather / 환율 · ExchangeRate-API<br>서울에서 시작하는 맛있는 발견.</div></footer>')
