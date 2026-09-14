@@ -28,7 +28,7 @@ EXCHANGE_API_KEY = os.getenv("EXCHANGE_API_KEY")
 SEOUL_PHOTO = "https://images.unsplash.com/photo-1662300835077-73c417630ff5?auto=format&fit=crop&w=2200&q=85"
 PHOTO_SOURCE = "https://unsplash.com/photos/YqgOH-ewy6Q"
 
-st.set_page_config(page_title="오모먹 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="오맛발 | 오늘의 맛있는 발견", page_icon="🍽️", layout="wide", initial_sidebar_state="collapsed")
 
 def esc(value):
     return html.escape(str(value or ""), quote=True)
